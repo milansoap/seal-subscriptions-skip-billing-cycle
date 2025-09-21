@@ -92,28 +92,24 @@ export async function POST(request: NextRequest) {
       !attempt.status || attempt.status === '' || attempt.status === 'scheduled'
     );
 
-    if (!nextAttempt) {
-      // Check if the next attempt is already skipped
-      const nextSkippedAttempt = billingAttempts.find((attempt: any) => 
-        attempt.skipped_on && (!attempt.status || attempt.status === '')
-      );
-      
-      if (nextSkippedAttempt) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: 'Next billing cycle is already skipped!',
-            skippedOn: nextSkippedAttempt.skipped_on
-          },
-          {
-            status: 200,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-            }
+    // Check if the next attempt is already skipped
+    if (nextAttempt && nextAttempt.skipped_on) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Next billing cycle is already skipped!',
+          skippedOn: nextAttempt.skipped_on
+        },
+        {
+          status: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
           }
-        );
-      }
+        }
+      );
+    }
 
+    if (!nextAttempt) {
       return NextResponse.json(
         { 
           success: false, 
