@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     const billingAttempts = subscriptionData.billing_attempts || [];
     console.log('Billing attempts found:', billingAttempts);
     
-    const nextAttempt = billingAttempts.find(attempt => attempt.status === 'scheduled');
+    const nextAttempt = billingAttempts.find((attempt: any) => attempt.status === 'scheduled');
 
     if (!nextAttempt) {
       return NextResponse.json(
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in skip delivery:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
       {
         status: 500,
         headers: {
